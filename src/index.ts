@@ -1,10 +1,9 @@
 import { registerPlugin } from '@capacitor/core';
+import type { NativeWebviewPlugin } from './definitions';
 
-import type { NativeWebiewPlugin } from './definitions';
-
-const NativeWebiew = registerPlugin<NativeWebiewPlugin>('NativeWebiew', {
-  web: () => import('./web').then((m) => new m.NativeWebiewWeb()),
+const NativeWebview = registerPlugin<NativeWebviewPlugin>('NativeWebview', {
+  web: () => import('./web').then((m) => new m.NativeWebviewWeb()),
 });
 
 export * from './definitions';
-export { NativeWebiew };
+export { NativeWebview };
