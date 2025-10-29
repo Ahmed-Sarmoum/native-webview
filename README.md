@@ -17,6 +17,8 @@ npx cap sync
 * [`close()`](#close)
 * [`addListener('urlChanged', ...)`](#addlistenerurlchanged-)
 * [`addListener('closed', ...)`](#addlistenerclosed-)
+* [`addListener('reload', ...)`](#addlistenerreload-)
+* [`addListener('next', ...)`](#addlistenernext-)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
@@ -80,6 +82,38 @@ addListener(eventName: 'closed', listenerFunc: () => void) => Promise<PluginList
 | Param              | Type                       |
 | ------------------ | -------------------------- |
 | **`eventName`**    | <code>'closed'</code>      |
+| **`listenerFunc`** | <code>() =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('reload', ...)
+
+```typescript
+addListener(eventName: 'reload', listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                       |
+| ------------------ | -------------------------- |
+| **`eventName`**    | <code>'reload'</code>      |
+| **`listenerFunc`** | <code>() =&gt; void</code> |
+
+**Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>
+
+--------------------
+
+
+### addListener('next', ...)
+
+```typescript
+addListener(eventName: 'next', listenerFunc: () => void) => Promise<PluginListenerHandle>
+```
+
+| Param              | Type                       |
+| ------------------ | -------------------------- |
+| **`eventName`**    | <code>'next'</code>        |
 | **`listenerFunc`** | <code>() =&gt; void</code> |
 
 **Returns:** <code>Promise&lt;<a href="#pluginlistenerhandle">PluginListenerHandle</a>&gt;</code>

@@ -1,8 +1,10 @@
+import { registerPlugin } from '@capacitor/core';
+
 export interface NativeWebviewPlugin {
   /**
    * Open a URL in a native webview (iOS only)
    * @param options - Configuration for the webview
-   * @returns Promise that resolves when webview is closed
+   * @returns Promise that resolves when webview is opened
    */
   open(options: OpenWebviewOptions): Promise<{ url?: string }>;
 
@@ -17,6 +19,10 @@ export interface NativeWebviewPlugin {
   addListener(eventName: 'urlChanged', listenerFunc: (info: { url: string }) => void): Promise<PluginListenerHandle>;
 
   addListener(eventName: 'closed', listenerFunc: () => void): Promise<PluginListenerHandle>;
+
+  addListener(eventName: 'reload', listenerFunc: () => void): Promise<PluginListenerHandle>;
+
+  addListener(eventName: 'next', listenerFunc: () => void): Promise<PluginListenerHandle>;
 
   /**
    * Remove all listeners for this plugin
@@ -64,3 +70,7 @@ export interface OpenWebviewOptions {
 export interface PluginListenerHandle {
   remove: () => Promise<void>;
 }
+
+const NativeWebview = registerPlugin<NativeWebviewPlugin>('NativeWebview');
+
+export default NativeWebview;

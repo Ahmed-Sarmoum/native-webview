@@ -37,6 +37,8 @@ export class NativeWebviewWeb extends WebPlugin implements NativeWebviewPlugin {
     listenerFunc: (info: { url: string }) => void,
   ): Promise<PluginListenerHandle>;
   async addListener(eventName: 'closed', listenerFunc: () => void): Promise<PluginListenerHandle>;
+  async addListener(eventName: 'next', listenerFunc: () => void): Promise<PluginListenerHandle>;
+  async addListener(eventName: 'reload', listenerFunc: () => void): Promise<PluginListenerHandle>;
   async addListener(_eventName: string, _listenerFunc: any): Promise<PluginListenerHandle> {
     // Web implementation doesn't support native events
     return {
