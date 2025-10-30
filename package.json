@@ -1,7 +1,7 @@
 {
-  "name": "native-webview",
+  "name": "capacitor-ios-native-webview",
   "version": "1.0.0",
-  "description": "A Capacitor Native Webview",
+  "description": "Capacitor plugin for opening and controlling native iOS webviews with custom alerts and loading overlays.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",

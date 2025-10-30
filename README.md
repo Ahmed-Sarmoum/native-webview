@@ -1,6 +1,6 @@
 # native-webview
 
-A Capacitor Native Webview
+Capacitor plugin for opening and controlling native iOS webviews with custom alerts and loading overlays.
 
 ## Install
 
