@@ -10,6 +10,13 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "open", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "close", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showCustomAlert", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showAlert", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showSuccess", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showError", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showWarning", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "showLoading", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "hideLoading", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "getWebViewRect", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "addListener", returnType: CAPPluginReturnCallback),
         CAPPluginMethod(name: "removeAllListeners", returnType: CAPPluginReturnNone)
@@ -18,6 +25,9 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
     private var embeddedWebView: WKWebView?
     private var reloadButton: UIButton?
     private var nextButton: UIButton?
+    private var loadingOverlay: UIView?
+    private var loadingSpinner: UIActivityIndicatorView?
+    private var loadingLabel: UILabel?
     
     @objc func open(_ call: CAPPluginCall) {
         NSLog("🚀 NativeWebview.open() called")
@@ -51,12 +61,12 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
                 return
             }
             
-            // Remove existing webview and buttons if any
+            
             self.embeddedWebView?.removeFromSuperview()
             self.reloadButton?.removeFromSuperview()
             self.nextButton?.removeFromSuperview()
             
-            // Create and configure embedded webview
+            
             let config = WKWebViewConfiguration()
             config.allowsInlineMediaPlayback = true
             config.mediaTypesRequiringUserActionForPlayback = []
@@ -66,7 +76,7 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             preferences.allowsContentJavaScript = true
             config.defaultWebpagePreferences = preferences
             
-            // Create webview with full screen frame (including safe areas)
+            
             let webView = WKWebView(frame: viewController.view.bounds, configuration: config)
             webView.navigationDelegate = self
             webView.uiDelegate = self
@@ -76,18 +86,18 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             webView.scrollView.contentInsetAdjustmentBehavior = .never
             
-            // Add top padding/inset to account for safe area (notch, status bar, etc.)
+            
             let topInset = viewController.view.safeAreaInsets.top
             webView.scrollView.contentInset = UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
             webView.scrollView.scrollIndicatorInsets = UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0)
             
-            // Add webview to view
+            
             viewController.view.addSubview(webView)
             viewController.view.bringSubviewToFront(webView)
             
             self.embeddedWebView = webView
             
-            // Create RELOAD button (circular, top-left)
+            
             let reloadButton = UIButton(type: .system)
             let reloadConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
             let reloadImage = UIImage(systemName: "arrow.clockwise", withConfiguration: reloadConfig)
@@ -102,13 +112,13 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             reloadButton.translatesAutoresizingMaskIntoConstraints = false
             reloadButton.addTarget(self, action: #selector(self.reloadButtonTapped), for: .touchUpInside)
             
-            // Add reload button on top of webview
+            
             viewController.view.addSubview(reloadButton)
             viewController.view.bringSubviewToFront(reloadButton)
             
-            // Position reload button in top-left corner
+            
             NSLayoutConstraint.activate([
-                reloadButton.topAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.topAnchor, constant: 0),
+                reloadButton.topAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.topAnchor, constant: 20),
                 reloadButton.leadingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
                 reloadButton.widthAnchor.constraint(equalToConstant: 56),
                 reloadButton.heightAnchor.constraint(equalToConstant: 56)
@@ -116,21 +126,21 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             
             self.reloadButton = reloadButton
             
-            // Create NEXT button (rounded rectangle, bottom-left)
+            
             let nextButton = UIButton(type: .system)
             nextButton.setTitle("Suivant", for: .normal)
             nextButton.setTitleColor(.white, for: .normal)
             nextButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-            nextButton.backgroundColor = UIColor(red: 0.27, green: 0.25, blue: 0.24, alpha: 1.0) // Dark brown/gray
+            nextButton.backgroundColor = UIColor(red: 0.27, green: 0.25, blue: 0.24, alpha: 1.0)
             nextButton.layer.cornerRadius = 18
             nextButton.translatesAutoresizingMaskIntoConstraints = false
             nextButton.addTarget(self, action: #selector(self.nextButtonTapped), for: .touchUpInside)
             
-            // Add next button on top of webview
+            
             viewController.view.addSubview(nextButton)
             viewController.view.bringSubviewToFront(nextButton)
             
-            // Position next button at bottom-left
+            
             NSLayoutConstraint.activate([
                 nextButton.bottomAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.bottomAnchor, constant: 25),
                 nextButton.leadingAnchor.constraint(equalTo: viewController.view.safeAreaLayoutGuide.leadingAnchor, constant: 14),
@@ -140,12 +150,12 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             
             self.nextButton = nextButton
             
-            // Load URL
+            
             NSLog("📱 Loading URL: \(url.absoluteString)")
             let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 30)
             webView.load(request)
             
-            // Inject CSS for viewport
+            
             let jsCode = """
             var meta = document.createElement('meta');
             meta.name = 'viewport';
@@ -174,9 +184,359 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            // Notify Vue before closing
+            
             self.notifyListeners("next", data: [:])
             NSLog("✅ Next clicked - notified Vue")
+        }
+    }
+    
+    
+    
+    @objc func showCustomAlert(_ call: CAPPluginCall) {
+        guard let message = call.getString("message") else {
+            call.reject("Message is required")
+            return
+        }
+        
+        let type = call.getString("type") ?? "info" 
+        let buttonText = call.getString("buttonText") ?? "OK"
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let viewController = self.bridge?.viewController else {
+                call.reject("View controller not available")
+                return
+            }
+            
+            self.showCustomAlertDialog(
+                viewController: viewController,
+                message: message,
+                type: type,
+                buttonText: buttonText,
+                completion: {
+                    call.resolve()
+                }
+            )
+        }
+    }
+    
+    private func showCustomAlertDialog(
+        viewController: UIViewController,
+        message: String,
+        type: String,
+        buttonText: String,
+        completion: @escaping () -> Void
+    ) {
+        
+        let overlay = UIView(frame: viewController.view.bounds)
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        overlay.alpha = 0
+        
+        
+        let dialog = UIView()
+        dialog.backgroundColor = UIColor(red: 0.96, green: 0.95, blue: 0.94, alpha: 1.0) 
+        dialog.layer.cornerRadius = 16
+        dialog.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        let iconLabel = UILabel()
+        iconLabel.font = UIFont.systemFont(ofSize: 48)
+        iconLabel.textAlignment = .center
+        iconLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        switch type {
+        case "success":
+            iconLabel.text = "✓"
+            iconLabel.textColor = UIColor.systemGreen
+        case "error":
+            iconLabel.text = "!"
+            iconLabel.textColor = UIColor.systemRed
+        case "warning":
+            iconLabel.text = "!"
+            iconLabel.textColor = UIColor.systemOrange
+        default:
+            iconLabel.text = "!"
+            iconLabel.textColor = UIColor.darkGray
+        }
+        
+        
+        let iconContainer = UIView()
+        iconContainer.translatesAutoresizingMaskIntoConstraints = false
+        iconContainer.addSubview(iconLabel)
+        
+        
+        let messageLabel = UILabel()
+        messageLabel.text = message
+        messageLabel.font = UIFont.systemFont(ofSize: 16)
+        messageLabel.textColor = UIColor.darkGray
+        messageLabel.textAlignment = .center
+        messageLabel.numberOfLines = 0
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        let okButton = UIButton(type: .system)
+        okButton.setTitle(buttonText, for: .normal)
+        okButton.setTitleColor(.white, for: .normal)
+        okButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        okButton.backgroundColor = UIColor(red: 0.27, green: 0.25, blue: 0.24, alpha: 1.0) 
+        okButton.layer.cornerRadius = 8
+        okButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        
+        dialog.addSubview(iconContainer)
+        dialog.addSubview(messageLabel)
+        dialog.addSubview(okButton)
+        
+        overlay.addSubview(dialog)
+        viewController.view.addSubview(overlay)
+        
+        
+        NSLayoutConstraint.activate([
+            
+            iconContainer.topAnchor.constraint(equalTo: dialog.topAnchor, constant: 32),
+            iconContainer.centerXAnchor.constraint(equalTo: dialog.centerXAnchor),
+            iconContainer.widthAnchor.constraint(equalToConstant: 64),
+            iconContainer.heightAnchor.constraint(equalToConstant: 64),
+            
+            
+            iconLabel.centerXAnchor.constraint(equalTo: iconContainer.centerXAnchor),
+            iconLabel.centerYAnchor.constraint(equalTo: iconContainer.centerYAnchor),
+            
+            
+            messageLabel.topAnchor.constraint(equalTo: iconContainer.bottomAnchor, constant: 24),
+            messageLabel.leadingAnchor.constraint(equalTo: dialog.leadingAnchor, constant: 24),
+            messageLabel.trailingAnchor.constraint(equalTo: dialog.trailingAnchor, constant: -24),
+            
+            
+            okButton.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 32),
+            okButton.leadingAnchor.constraint(equalTo: dialog.leadingAnchor, constant: 24),
+            okButton.trailingAnchor.constraint(equalTo: dialog.trailingAnchor, constant: -24),
+            okButton.heightAnchor.constraint(equalToConstant: 48),
+            okButton.bottomAnchor.constraint(equalTo: dialog.bottomAnchor, constant: -24),
+            
+            
+            dialog.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+            dialog.centerYAnchor.constraint(equalTo: overlay.centerYAnchor),
+            dialog.widthAnchor.constraint(equalToConstant: 320)
+        ])
+        
+        
+        okButton.addAction(UIAction { _ in
+            UIView.animate(withDuration: 0.2, animations: {
+                overlay.alpha = 0
+            }) { _ in
+                overlay.removeFromSuperview()
+                completion()
+            }
+        }, for: .touchUpInside)
+        
+        
+        UIView.animate(withDuration: 0.3) {
+            overlay.alpha = 1
+        }
+    }
+    
+    
+    
+    @objc func showAlert(_ call: CAPPluginCall) {
+        guard let message = call.getString("message") else {
+            call.reject("Message is required")
+            return
+        }
+        
+        let title = call.getString("title")
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let viewController = self?.bridge?.viewController else {
+                call.reject("View controller not available")
+                return
+            }
+            
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+                call.resolve()
+            })
+            
+            viewController.present(alert, animated: true)
+        }
+    }
+    
+    @objc func showSuccess(_ call: CAPPluginCall) {
+        guard let message = call.getString("message") else {
+            call.reject("Message is required")
+            return
+        }
+        
+        let buttonText = call.getString("buttonText") ?? "OK"
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let viewController = self.bridge?.viewController else {
+                call.reject("View controller not available")
+                return
+            }
+            
+            self.showCustomAlertDialog(
+                viewController: viewController,
+                message: message,
+                type: "success",
+                buttonText: buttonText,
+                completion: {
+                    call.resolve()
+                }
+            )
+        }
+    }
+    
+    @objc func showError(_ call: CAPPluginCall) {
+        guard let message = call.getString("message") else {
+            call.reject("Message is required")
+            return
+        }
+        
+        let buttonText = call.getString("buttonText") ?? "OK"
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let viewController = self.bridge?.viewController else {
+                call.reject("View controller not available")
+                return
+            }
+            
+            self.showCustomAlertDialog(
+                viewController: viewController,
+                message: message,
+                type: "error",
+                buttonText: buttonText,
+                completion: {
+                    call.resolve()
+                }
+            )
+        }
+    }
+    
+    @objc func showWarning(_ call: CAPPluginCall) {
+        guard let message = call.getString("message") else {
+            call.reject("Message is required")
+            return
+        }
+        
+        let buttonText = call.getString("buttonText") ?? "OK"
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let viewController = self.bridge?.viewController else {
+                call.reject("View controller not available")
+                return
+            }
+            
+            self.showCustomAlertDialog(
+                viewController: viewController,
+                message: message,
+                type: "warning",
+                buttonText: buttonText,
+                completion: {
+                    call.resolve()
+                }
+            )
+        }
+    }
+    
+    @objc func showLoading(_ call: CAPPluginCall) {
+        let message = call.getString("message")
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            guard let viewController = self.bridge?.viewController else {
+                call.reject("View controller not available")
+                return
+            }
+            
+            
+            self.loadingOverlay?.removeFromSuperview()
+            
+            
+            let overlay = UIView(frame: viewController.view.bounds)
+            overlay.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+            overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            
+            
+            let container = UIView()
+            container.backgroundColor = .white
+            container.layer.cornerRadius = 12
+            container.translatesAutoresizingMaskIntoConstraints = false
+            
+            
+            let spinner = UIActivityIndicatorView(style: .large)
+            spinner.color = .systemBlue
+            spinner.translatesAutoresizingMaskIntoConstraints = false
+            spinner.startAnimating()
+            
+            container.addSubview(spinner)
+            
+            
+            if let msg = message {
+                let label = UILabel()
+                label.text = msg
+                label.textColor = .darkGray
+                label.font = UIFont.systemFont(ofSize: 16)
+                label.textAlignment = .center
+                label.numberOfLines = 0
+                label.translatesAutoresizingMaskIntoConstraints = false
+                
+                container.addSubview(label)
+                self.loadingLabel = label
+                
+                NSLayoutConstraint.activate([
+                    spinner.topAnchor.constraint(equalTo: container.topAnchor, constant: 20),
+                    spinner.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+                    
+                    label.topAnchor.constraint(equalTo: spinner.bottomAnchor, constant: 16),
+                    label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 20),
+                    label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -20),
+                    label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -20),
+                    
+                    container.widthAnchor.constraint(equalToConstant: 200)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    spinner.topAnchor.constraint(equalTo: container.topAnchor, constant: 30),
+                    spinner.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 30),
+                    spinner.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -30),
+                    spinner.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -30)
+                ])
+            }
+            
+            overlay.addSubview(container)
+            
+            NSLayoutConstraint.activate([
+                container.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+                container.centerYAnchor.constraint(equalTo: overlay.centerYAnchor)
+            ])
+            
+            viewController.view.addSubview(overlay)
+            viewController.view.bringSubviewToFront(overlay)
+            
+            self.loadingOverlay = overlay
+            self.loadingSpinner = spinner
+            
+            call.resolve()
+        }
+    }
+    
+    @objc func hideLoading(_ call: CAPPluginCall) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            UIView.animate(withDuration: 0.2, animations: {
+                self.loadingOverlay?.alpha = 0
+            }) { _ in
+                self.loadingOverlay?.removeFromSuperview()
+                self.loadingOverlay = nil
+                self.loadingSpinner = nil
+                self.loadingLabel = nil
+                call.resolve()
+            }
         }
     }
     
@@ -202,6 +562,12 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
                 nextBtn.removeFromSuperview()
                 self.nextButton = nil
             }
+            
+            
+            self.loadingOverlay?.removeFromSuperview()
+            self.loadingOverlay = nil
+            self.loadingSpinner = nil
+            self.loadingLabel = nil
             
             self.notifyListeners("closed", data: [:])
             call.resolve()
@@ -235,7 +601,7 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
         }
     }
     
-    // MARK: - WKNavigationDelegate
+    
     
     public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         NSLog("🔄 Started loading: \(webView.url?.absoluteString ?? "unknown")")
@@ -268,7 +634,7 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
         decisionHandler(.allow)
     }
     
-    // MARK: - WKUIDelegate
+    
     
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame == nil {
@@ -310,5 +676,9 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
         reloadButton = nil
         nextButton?.removeFromSuperview()
         nextButton = nil
+        loadingOverlay?.removeFromSuperview()
+        loadingOverlay = nil
+        loadingSpinner = nil
+        loadingLabel = nil
     }
 }

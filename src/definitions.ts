@@ -14,8 +14,47 @@ export interface NativeWebviewPlugin {
   close(): Promise<void>;
 
   /**
-   * Add a listener for webview events
+   * Show a custom styled alert dialog (matches your app design)
+   * @param options.message - The message to display
+   * @param options.type - The type of alert (info, success, error, warning)
+   * @param options.buttonText - Custom text for the OK button (default: "OK")
    */
+  showCustomAlert(options: {
+    message: string;
+    type?: 'info' | 'success' | 'error' | 'warning';
+    buttonText?: string;
+  }): Promise<void>;
+
+  /**
+   * Show a standard system alert
+   */
+  showAlert(options: { title?: string; message: string }): Promise<void>;
+
+  /**
+   * Show a success alert (uses custom styling)
+   */
+  showSuccess(options: { message: string; buttonText?: string }): Promise<void>;
+
+  /**
+   * Show an error alert (uses custom styling)
+   */
+  showError(options: { message: string; buttonText?: string }): Promise<void>;
+
+  /**
+   * Show a warning alert (uses custom styling)
+   */
+  showWarning(options: { message: string; buttonText?: string }): Promise<void>;
+
+  /**
+   * Show a loading overlay
+   */
+  showLoading(options?: { message?: string }): Promise<void>;
+
+  /**
+   * Hide the loading overlay
+   */
+  hideLoading(): Promise<void>;
+
   addListener(eventName: 'urlChanged', listenerFunc: (info: { url: string }) => void): Promise<PluginListenerHandle>;
 
   addListener(eventName: 'closed', listenerFunc: () => void): Promise<PluginListenerHandle>;

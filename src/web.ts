@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { WebPlugin } from '@capacitor/core';
 
 import type { NativeWebviewPlugin, OpenWebviewOptions, PluginListenerHandle } from './definitions';
@@ -23,6 +24,40 @@ export class NativeWebviewWeb extends WebPlugin implements NativeWebviewPlugin {
     // }
 
     return { url: options.url };
+  }
+
+  async showCustomAlert(options: any) {
+    return options;
+  }
+
+  async showAlert(options: { message: string }) {
+    console.log(options.message);
+
+    return;
+  }
+  async showSuccess(options: { message: string }) {
+    console.log(options.message);
+
+    return;
+  }
+  async showError(options: { message: string }) {
+    console.log(options.message);
+
+    return;
+  }
+  async showWarning(options: { message: string }) {
+    console.log(options.message);
+
+    return;
+  }
+  async showLoading(options: { message: string }) {
+    console.log(options.message);
+
+    return;
+  }
+
+  async hideLoading() {
+    return;
   }
 
   async close(): Promise<void> {

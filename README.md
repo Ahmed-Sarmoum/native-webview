@@ -15,6 +15,13 @@ npx cap sync
 
 * [`open(...)`](#open)
 * [`close()`](#close)
+* [`showCustomAlert(...)`](#showcustomalert)
+* [`showAlert(...)`](#showalert)
+* [`showSuccess(...)`](#showsuccess)
+* [`showError(...)`](#showerror)
+* [`showWarning(...)`](#showwarning)
+* [`showLoading(...)`](#showloading)
+* [`hideLoading()`](#hideloading)
 * [`addListener('urlChanged', ...)`](#addlistenerurlchanged-)
 * [`addListener('closed', ...)`](#addlistenerclosed-)
 * [`addListener('reload', ...)`](#addlistenerreload-)
@@ -55,13 +62,112 @@ Close the currently open webview
 --------------------
 
 
+### showCustomAlert(...)
+
+```typescript
+showCustomAlert(options: { message: string; type?: 'info' | 'success' | 'error' | 'warning'; buttonText?: string; }) => Promise<void>
+```
+
+Show a custom styled alert dialog (matches your app design)
+
+| Param         | Type                                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ message: string; type?: 'error' \| 'info' \| 'success' \| 'warning'; buttonText?: string; }</code> |
+
+--------------------
+
+
+### showAlert(...)
+
+```typescript
+showAlert(options: { title?: string; message: string; }) => Promise<void>
+```
+
+Show a standard system alert
+
+| Param         | Type                                              |
+| ------------- | ------------------------------------------------- |
+| **`options`** | <code>{ title?: string; message: string; }</code> |
+
+--------------------
+
+
+### showSuccess(...)
+
+```typescript
+showSuccess(options: { message: string; buttonText?: string; }) => Promise<void>
+```
+
+Show a success alert (uses custom styling)
+
+| Param         | Type                                                   |
+| ------------- | ------------------------------------------------------ |
+| **`options`** | <code>{ message: string; buttonText?: string; }</code> |
+
+--------------------
+
+
+### showError(...)
+
+```typescript
+showError(options: { message: string; buttonText?: string; }) => Promise<void>
+```
+
+Show an error alert (uses custom styling)
+
+| Param         | Type                                                   |
+| ------------- | ------------------------------------------------------ |
+| **`options`** | <code>{ message: string; buttonText?: string; }</code> |
+
+--------------------
+
+
+### showWarning(...)
+
+```typescript
+showWarning(options: { message: string; buttonText?: string; }) => Promise<void>
+```
+
+Show a warning alert (uses custom styling)
+
+| Param         | Type                                                   |
+| ------------- | ------------------------------------------------------ |
+| **`options`** | <code>{ message: string; buttonText?: string; }</code> |
+
+--------------------
+
+
+### showLoading(...)
+
+```typescript
+showLoading(options?: { message?: string | undefined; } | undefined) => Promise<void>
+```
+
+Show a loading overlay
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ message?: string; }</code> |
+
+--------------------
+
+
+### hideLoading()
+
+```typescript
+hideLoading() => Promise<void>
+```
+
+Hide the loading overlay
+
+--------------------
+
+
 ### addListener('urlChanged', ...)
 
 ```typescript
 addListener(eventName: 'urlChanged', listenerFunc: (info: { url: string; }) => void) => Promise<PluginListenerHandle>
 ```
-
-Add a listener for webview events
 
 | Param              | Type                                             |
 | ------------------ | ------------------------------------------------ |
