@@ -95,6 +95,6 @@ export interface PluginListenerHandle {
   remove: () => Promise<void>;
 }
 
-const NativeWebview = registerPlugin<NativeWebviewPlugin>('NativeWebview');
+const NativeWebview = registerPlugin<NativeWebviewPlugin>('CapacitorIosNativeWebview');
 
 export default NativeWebview;

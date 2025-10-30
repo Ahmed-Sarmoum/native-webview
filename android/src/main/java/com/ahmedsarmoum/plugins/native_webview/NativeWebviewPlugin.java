@@ -6,7 +6,7 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "NativeWebview")
+@CapacitorPlugin(name = "CapacitorIosNativeWebview")
 public class NativeWebviewPlugin extends Plugin {
 
     private NativeWebview implementation = new NativeWebview(getActivity());

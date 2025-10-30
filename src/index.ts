@@ -1,7 +1,7 @@
 import { registerPlugin } from '@capacitor/core';
 import type { NativeWebviewPlugin } from './definitions';
 
-const NativeWebview = registerPlugin<NativeWebviewPlugin>('NativeWebview', {
+const NativeWebview = registerPlugin<NativeWebviewPlugin>('CapacitorIosNativeWebview', {
   web: () => import('./web').then((m) => new m.NativeWebviewWeb()),
 });
 

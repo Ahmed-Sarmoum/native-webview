@@ -2,11 +2,11 @@
 import PackageDescription
 
 let package = Package(
-    name: "NativeWebview",
+    name: "CapacitorIosNativeWebview",
     platforms: [.iOS(.v14)],
     products: [
         .library(
-            name: "NativeWebview",
+            name: "CapacitorIosNativeWebview",
             targets: ["NativeWebviewPlugin"])
     ],
     dependencies: [

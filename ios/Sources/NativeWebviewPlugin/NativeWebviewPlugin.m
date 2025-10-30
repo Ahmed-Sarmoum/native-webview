@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <Capacitor/Capacitor.h>
 
-CAP_PLUGIN(NativeWebviewPlugin, "NativeWebview",
+CAP_PLUGIN(NativeWebviewPlugin, "CapacitorIosNativeWebview",
     CAP_PLUGIN_METHOD(open, CAPPluginReturnPromise);
     CAP_PLUGIN_METHOD(close, CAPPluginReturnPromise);
     CAP_PLUGIN_METHOD(showAlert, CAPPluginReturnPromise);

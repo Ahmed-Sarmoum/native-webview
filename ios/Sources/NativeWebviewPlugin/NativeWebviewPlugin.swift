@@ -6,7 +6,7 @@ import SafariServices
 @objc(NativeWebviewPlugin)
 public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDelegate, WKUIDelegate {
     public let identifier = "NativeWebviewPlugin"
-    public let jsName = "NativeWebview"
+    public let jsName = "CapacitorIosNativeWebview"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "open", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "close", returnType: CAPPluginReturnPromise),
