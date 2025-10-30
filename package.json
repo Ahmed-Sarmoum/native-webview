@@ -13,7 +13,7 @@
     "ios/Sources",
     "ios/Tests",
     "Package.swift",
-    "NativeWebview.podspec"
+    "CapacitorIosNativeWebview.podspec"
   ],
   "author": "Ahmed SARMOUM",
   "license": "MIT",
