@@ -243,15 +243,12 @@ Remove all listeners for this plugin
 
 #### OpenWebviewOptions
 
-| Prop                  | Type                 | Description                                              |
-| --------------------- | -------------------- | -------------------------------------------------------- |
-| **`url`**             | <code>string</code>  | The URL to load in the webview                           |
-| **`title`**           | <code>string</code>  | Title for the navigation bar (iOS only)                  |
-| **`showCloseButton`** | <code>boolean</code> | Show a done/close button (default: true)                 |
-| **`closeButtonText`** | <code>string</code>  | Close button text (default: "Done")                      |
-| **`toolbarEnabled`**  | <code>boolean</code> | Enable toolbar with navigation controls (default: false) |
-| **`toolbarColor`**    | <code>string</code>  | Color for toolbar and navigation bar (hex format)        |
-| **`clearCookies`**    | <code>boolean</code> | Allow clearing cookies before loading (default: false)   |
+| Prop               | Type                 | Description                                            |
+| ------------------ | -------------------- | ------------------------------------------------------ |
+| **`url`**          | <code>string</code>  | The URL to load in the webview                         |
+| **`title`**        | <code>string</code>  | Title for the navigation bar (iOS only)                |
+| **`nextBtnText`**  | <code>string</code>  | Next button text                                       |
+| **`clearCookies`** | <code>boolean</code> | Allow clearing cookies before loading (default: false) |
 
 
 #### PluginListenerHandle

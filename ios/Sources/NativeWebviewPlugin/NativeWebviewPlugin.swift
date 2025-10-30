@@ -36,6 +36,11 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             call.reject("URL is required")
             return
         }
+
+        guard let nextBtnString = call.getString("nextBtnText") else {
+            call.reject("nextBtnText is required")
+            return
+        }
         
         guard let url = URL(string: urlString) else {
             call.reject("Invalid URL")
@@ -128,7 +133,7 @@ public class NativeWebviewPlugin: CAPPlugin, CAPBridgedPlugin, WKNavigationDeleg
             
             
             let nextButton = UIButton(type: .system)
-            nextButton.setTitle("Suivant", for: .normal)
+            nextButton.setTitle(nextBtnString, for: .normal)
             nextButton.setTitleColor(.white, for: .normal)
             nextButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
             nextButton.backgroundColor = UIColor(red: 0.27, green: 0.25, blue: 0.24, alpha: 1.0)

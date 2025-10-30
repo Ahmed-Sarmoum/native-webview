@@ -81,24 +81,9 @@ export interface OpenWebviewOptions {
   title?: string;
 
   /**
-   * Show a done/close button (default: true)
+   * Next button text
    */
-  showCloseButton?: boolean;
-
-  /**
-   * Close button text (default: "Done")
-   */
-  closeButtonText?: string;
-
-  /**
-   * Enable toolbar with navigation controls (default: false)
-   */
-  toolbarEnabled?: boolean;
-
-  /**
-   * Color for toolbar and navigation bar (hex format)
-   */
-  toolbarColor?: string;
+  nextBtnText?: string;
 
   /**
    * Allow clearing cookies before loading (default: false)
