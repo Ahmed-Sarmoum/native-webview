@@ -66,10 +66,127 @@ public class NativeWebview {
     }
 
     public void removeAllListeners(PluginCall call) {
-        for (PluginCall listenerCall : listeners.values()) {
-            listenerCall.releaseKeepAlive();
-        }
         listeners.clear();
+        call.resolve();
+    }
+
+    public void showCustomAlert(PluginCall call) {
+        String message = call.getString("message");
+        String type = call.getString("type", "info");
+        String buttonText = call.getString("buttonText", "OK");
+
+        if (message == null) {
+            call.reject("Message is required");
+            return;
+        }
+
+        // For Android, use a simple AlertDialog
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activity);
+        builder.setMessage(message)
+               .setPositiveButton(buttonText, (dialog, id) -> {
+                   // User clicked OK button
+                   dialog.dismiss();
+                   call.resolve();
+               });
+
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showAlert(PluginCall call) {
+        String title = call.getString("title");
+        String message = call.getString("message");
+
+        if (message == null) {
+            call.reject("Message is required");
+            return;
+        }
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activity);
+        if (title != null) {
+            builder.setTitle(title);
+        }
+        builder.setMessage(message)
+               .setPositiveButton("OK", (dialog, id) -> {
+                   dialog.dismiss();
+                   call.resolve();
+               });
+
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showSuccess(PluginCall call) {
+        String message = call.getString("message");
+        String buttonText = call.getString("buttonText", "OK");
+
+        if (message == null) {
+            call.reject("Message is required");
+            return;
+        }
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activity);
+        builder.setMessage(message)
+               .setPositiveButton(buttonText, (dialog, id) -> {
+                   dialog.dismiss();
+                   call.resolve();
+               });
+
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showError(PluginCall call) {
+        String message = call.getString("message");
+        String buttonText = call.getString("buttonText", "OK");
+
+        if (message == null) {
+            call.reject("Message is required");
+            return;
+        }
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activity);
+        builder.setMessage(message)
+               .setPositiveButton(buttonText, (dialog, id) -> {
+                   dialog.dismiss();
+                   call.resolve();
+               });
+
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showWarning(PluginCall call) {
+        String message = call.getString("message");
+        String buttonText = call.getString("buttonText", "OK");
+
+        if (message == null) {
+            call.reject("Message is required");
+            return;
+        }
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(activity);
+        builder.setMessage(message)
+               .setPositiveButton(buttonText, (dialog, id) -> {
+                   dialog.dismiss();
+                   call.resolve();
+               });
+
+        android.app.AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void showLoading(PluginCall call) {
+        String message = call.getString("message");
+
+        // For simplicity, just use a Toast for loading indication
+        String loadingMessage = message != null ? message : "Loading...";
+        android.widget.Toast.makeText(activity, loadingMessage, android.widget.Toast.LENGTH_LONG).show();
+        call.resolve();
+    }
+
+    public void hideLoading(PluginCall call) {
+        // No persistent loading overlay in Android implementation, so just resolve
         call.resolve();
     }
 }

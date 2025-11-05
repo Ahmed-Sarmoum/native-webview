@@ -39,4 +39,39 @@ public class NativeWebviewPlugin extends Plugin {
     public void removeAllListeners(PluginCall call) {
         implementation.removeAllListeners(call);
     }
+
+    @PluginMethod
+    public void showCustomAlert(PluginCall call) {
+        implementation.showCustomAlert(call);
+    }
+
+    @PluginMethod
+    public void showAlert(PluginCall call) {
+        implementation.showAlert(call);
+    }
+
+    @PluginMethod
+    public void showSuccess(PluginCall call) {
+        implementation.showSuccess(call);
+    }
+
+    @PluginMethod
+    public void showError(PluginCall call) {
+        implementation.showError(call);
+    }
+
+    @PluginMethod
+    public void showWarning(PluginCall call) {
+        implementation.showWarning(call);
+    }
+
+    @PluginMethod
+    public void showLoading(PluginCall call) {
+        implementation.showLoading(call);
+    }
+
+    @PluginMethod
+    public void hideLoading(PluginCall call) {
+        implementation.hideLoading(call);
+    }
 }
